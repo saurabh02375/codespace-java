@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}My App{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="{{ url_for('home') }}">Home</a>
+                <a href="{{ url_for('register') }}">Register</a>
+                <a href="{{ url_for('view_users') }}">View Users</a>
+                <a href="{{ url_for('attendance') }}">Mark Attendance</a>
+        <a href="{{ url_for('export_attendance') }}" class="btn">Export Attendance</a>
+            
+            </nav>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 My App. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
