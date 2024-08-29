@@ -1,19 +1,47 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% block title %}Register{% endblock %} {% block
+    content %}
+    
+<!-- faq area start -->
+<div class="tp-faq-area pt-130 ">
+  <div class="container">
+    <div class="row align-items-end">
+      <div class="col-xl-7 col-lg-7 w-100">
+        <div class="tp-faq-form-box">
+          <div class="tp-faq-form-wrap">
+            <div class="tp-faq-form-content mb-45">
+              <h4 class="tp-faq-form-title mb-10">
 
-{% block title %}Mark Attendance{% endblock %}
 
-{% block content %}
-    <h2>Mark Attendance</h2>
-    <div class="video-feed">
-        <img src="{{ url_for('video_feed') }}" alt="Video Feed">
+                <h2>Mark Attendance</h2>
+                <div class="video-feed">
+                <img src="{{ url_for('video_feed') }}" alt="Video Feed" />
+                </div>
+                <p>Or</p>
+
+  
+            </div>
+            <form
+            action="{{ url_for('attendance') }}"
+            method="post"
+            enctype="multipart/form-data"
+          >
+          <label for="image">Upload Image for Attendance:</label>
+  <input type="file" id="image" name="image" accept="image/*" />
+  <button type="submit" class="tp-btn-border-paste height-50 text-center w-100">Submit</button>
+             
+            
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
-    <p>Or</p>
-    <form action="{{ url_for('attendance') }}" method="post" enctype="multipart/form-data">
-        <label for="image">Upload Image for Attendance:</label>
-        <input type="file" id="image" name="image" accept="image/*">
-        <button type="submit">Submit</button>
-    </form>
-    {% if result %}
-        <p>{{ result }}</p>
-    {% endif %}
-{% endblock %}
+  </div>
+  
+<!-- faq area end -->
+
+{% if result %}
+<p>{{ result }}</p>
+
+
+{% endif %} {% endblock %}
