@@ -68,13 +68,23 @@ def video_feed():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        name = request.form['name']
+        name = request.form.get('name')
         image = request.files.get('image')
         capture = request.form.get('capture')
+        errors = {}
 
+        # Validation for name
         if not name:
-            return "Error: Name is required!", 400
+            errors['name'] = "Name is required!"
 
+        # Validation for image or capture
+        if not image and not capture:
+            errors['image'] = "You must upload an image or capture one!"
+
+        if errors:
+            return render_template('register.html', errors=errors)
+
+        # If there's an image, save it
         if image:
             filename = f"{uuid.uuid4().hex}.jpg"
             image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
@@ -84,12 +94,12 @@ def register():
             image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             # Uncomment and implement the following function if capturing from camera
             # save_image_from_camera(image_path)
-        else:
-            return "Error: No image provided!", 400
 
+        # Save user data to a file
         with open('users.txt', 'a') as f:
             f.write(f"{name},{filename}\n")
         
+        # Process face recognition
         image = face_recognition.load_image_file(image_path)
         encodings = face_recognition.face_encodings(image)
         if encodings:
@@ -98,8 +108,9 @@ def register():
             known_face_names.append(name)
         
         return redirect(url_for('home'))
-    
+
     return render_template('register.html')
+
 
 @app.route('/view_users', methods=['GET', 'POST'])
 def view_users():
