@@ -177,12 +177,14 @@ content %}
                 <div class="col-xl-12">
                   <div class="team-details-input text-light mb-20">
                     <label class="text-dark">Name</label>
-
                     <input name="name" type="text" placeholder="Your name" />
+                    {% if errors and errors.get('name') %}
+                    <div class="text-danger">{{ errors['name'] }}</div>
+                    {% endif %}
                   </div>
                 </div>
 
-                <div class="for">
+                <div class="col-xl-12">
                   <label class="text-dark">Upload Image:</label>
                   <div id="upload-area" class="file-upload">
                     Drag & Drop or Click to Upload Image
@@ -199,7 +201,11 @@ content %}
                     alt="Image preview"
                     style="display: none"
                   />
+                  {% if errors and errors.get('image') %}
+                  <div class="text-danger">{{ errors['image'] }}</div>
+                  {% endif %}
                 </div>
+
                 <div class="col-xl-12">
                   <label class="text-dark">Or Capture Image:</label>
                   <label class="switch">
@@ -220,7 +226,6 @@ content %}
                     >
                       Submit
                     </button>
-                    <p class="ajax-response text-danger"></p>
                   </div>
                 </div>
               </div>
