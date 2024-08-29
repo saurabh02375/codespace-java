@@ -177,9 +177,14 @@ content %}
                 <div class="col-xl-12">
                   <div class="team-details-input text-light mb-20">
                     <label class="text-dark">Name</label>
-                    <input name="name" type="text" placeholder="Your name" />
+                    <input
+                      name="name"
+                      type="text"
+                      placeholder="Your name"
+                      class="form-control"
+                    />
                     {% if errors and errors.get('name') %}
-                    <div class="text-danger">{{ errors['name'] }}</div>
+                    <div class="text-danger mt-1">{{ errors['name'] }}</div>
                     {% endif %}
                   </div>
                 </div>
@@ -194,6 +199,7 @@ content %}
                     id="file-input"
                     name="image"
                     accept="image/*"
+                    class="form-control"
                   />
                   <img
                     id="preview"
@@ -202,7 +208,7 @@ content %}
                     style="display: none"
                   />
                   {% if errors and errors.get('image') %}
-                  <div class="text-danger">{{ errors['image'] }}</div>
+                  <div class="text-danger mt-1">{{ errors['image'] }}</div>
                   {% endif %}
                 </div>
 
@@ -213,10 +219,6 @@ content %}
                     <span class="slider"></span>
                   </label>
                 </div>
-
-                <label class="text-dark" for="capture"
-                  >Capture from Live Camera</label
-                >
 
                 <div class="col-xl-12">
                   <div class="team-details-btn">

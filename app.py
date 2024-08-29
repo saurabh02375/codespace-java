@@ -4,10 +4,11 @@ import cv2
 import face_recognition
 import numpy as np
 import pandas as pd
-from flask import Flask, request, render_template, redirect, url_for, Response, send_file
+from flask import Flask, request, get_flashed_messages, flash, render_template, redirect, url_for, Response, send_file
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
+app.secret_key = os.urandom(24) 
 
 # Ensure upload folder exists
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
@@ -82,32 +83,40 @@ def register():
             errors['image'] = "You must upload an image or capture one!"
 
         if errors:
+            for error in errors.values():
+                flash(error, 'error')  # Flashing error messages
             return render_template('register.html', errors=errors)
 
         # If there's an image, save it
-        if image:
-            filename = f"{uuid.uuid4().hex}.jpg"
-            image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            image.save(image_path)
-        elif capture:
-            filename = f"{uuid.uuid4().hex}.jpg"
-            image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            # Uncomment and implement the following function if capturing from camera
-            # save_image_from_camera(image_path)
+        try:
+            if image:
+                filename = f"{uuid.uuid4().hex}.jpg"
+                image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                image.save(image_path)
+            elif capture:
+                filename = f"{uuid.uuid4().hex}.jpg"
+                image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                # Uncomment and implement the following function if capturing from camera
+                # save_image_from_camera(image_path)
 
-        # Save user data to a file
-        with open('users.txt', 'a') as f:
-            f.write(f"{name},{filename}\n")
-        
-        # Process face recognition
-        image = face_recognition.load_image_file(image_path)
-        encodings = face_recognition.face_encodings(image)
-        if encodings:
-            encoding = encodings[0]
-            known_face_encodings.append(encoding)
-            known_face_names.append(name)
-        
-        return redirect(url_for('home'))
+            # Save user data to a file
+            with open('users.txt', 'a') as f:
+                f.write(f"{name},{filename}\n")
+            
+            # Process face recognition
+            image = face_recognition.load_image_file(image_path)
+            encodings = face_recognition.face_encodings(image)
+            if encodings:
+                encoding = encodings[0]
+                known_face_encodings.append(encoding)
+                known_face_names.append(name)
+
+            flash('Registration successful!', 'success')  # Flashing success message
+            return redirect(url_for('home'))
+
+        except Exception as e:
+            flash(f"An error occurred: {str(e)}", 'error')
+            return redirect(url_for('register'))
 
     return render_template('register.html')
 
