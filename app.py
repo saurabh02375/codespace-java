@@ -173,7 +173,7 @@ def attendance():
         image = request.files.get('image')
 
         if not image:
-            return render_template('attendance.html', result="No image provided!", error=True)
+            return "No image provided!", 400
 
         filename = f"{uuid.uuid4().hex}.jpg"
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
@@ -213,7 +213,7 @@ def attendance():
             result = f"Error processing image: {str(e)}"
             print(f"Error: {e}")
 
-        return render_template('attendance.html', result=result)
+        return result
 
     return render_template('attendance.html')
 

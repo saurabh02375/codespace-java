@@ -32,6 +32,7 @@ block content %}
 
             <!-- Form to upload image -->
             <form
+              id="upload-form"
               action="{{ url_for('attendance') }}"
               method="post"
               enctype="multipart/form-data"
@@ -111,8 +112,10 @@ block content %}
           })
             .then((response) => response.text())
             .then((data) => {
-              // Optionally handle the response here
-              alert("Image submitted successfully!");
+              // Update the result area with the server response
+              document
+                .querySelector(".tp-faq-area")
+                .insertAdjacentHTML("beforeend", `<p>${data}</p>`);
             })
             .catch((error) => console.error("Error:", error));
         }, "image/jpeg");
