@@ -46,36 +46,65 @@ if os.path.exists('users.txt'):
                     known_face_encodings.append(encoding)
                     known_face_names.append(name)
 
-def gen_frames():
-    cap = cv2.VideoCapture(0)
-    while True:
-        success, frame = cap.read()
-        if not success:
-            break
-        
-        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        face_locations = face_recognition.face_locations(rgb_frame)
-        face_encodings = face_recognition.face_encodings(rgb_frame, face_locations)
-        
-        for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
-            matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
-            name = "Unknown"
-            if True in matches:
-                first_match_index = matches.index(True)
-                name = known_face_names[first_match_index]
-            
-            cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 2)
-            cv2.putText(frame, name, (left, top - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
-
-        ret, buffer = cv2.imencode('.jpg', frame)
-        frame = buffer.tobytes()
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
 @app.route('/')
 def home():
     success_message = session.pop('success_message', None)
-    return render_template('home.html', success_message=success_message)
+    return render_template('home.html', success_message=success_message)                    
+
+def gen_frames():
+    cap = cv2.VideoCapture(0)
+    
+    # Check if the camera opened successfully
+    if not cap.isOpened():
+        print("Error: Camera could not be opened.")
+        return
+
+    while True:
+        try:
+            success, frame = cap.read()
+            if not success:
+                print("Error: Failed to capture image.")
+                break
+
+            # Convert the frame from BGR to RGB
+            rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            
+            # Find all face locations and face encodings in the current frame
+            face_locations = face_recognition.face_locations(rgb_frame)
+            face_encodings = face_recognition.face_encodings(rgb_frame, face_locations)
+            
+            # Draw rectangles and labels for each face
+            for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
+                matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
+                name = "Unknown"
+                if True in matches:
+                    first_match_index = matches.index(True)
+                    name = known_face_names[first_match_index]
+                
+                # Draw a rectangle around the face
+                cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 2)
+                # Draw the name below the face rectangle
+                cv2.putText(frame, name, (left, top - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+
+            # Encode the frame as JPEG
+            ret, buffer = cv2.imencode('.jpg', frame)
+            if not ret:
+                print("Error: Failed to encode image.")
+                break
+
+            # Convert to byte stream and yield
+            frame = buffer.tobytes()
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+        except Exception as e:
+            print(f"Error: {e}")
+            break
+
+    # Release the camera and clean up
+    cap.release()
+    cv2.destroyAllWindows()
 
 
 @app.route('/video_feed')
@@ -86,7 +115,33 @@ def video_feed():
 def realtime_feed():
     return render_template('realtime_feed.html')
 
-    
+@app.route('/detect_faces', methods=['POST'])
+def detect_faces():
+    try:
+        # Get image data from the request
+        image_data = request.data.split(b',', 1)[1]
+        image = Image.open(BytesIO(base64.b64decode(image_data)))
+        image_np = np.array(image)
+
+        # Convert to RGB
+        rgb_image = cv2.cvtColor(image_np, cv2.COLOR_BGR2RGB)
+
+        # Detect faces
+        face_locations = face_recognition.face_locations(rgb_image)
+
+        # Return detected faces
+        result = {
+            'detected': len(face_locations) > 0,
+            'faces': [{'x': top, 'y': left, 'width': right - left, 'height': bottom - top} for top, right, bottom, left in face_locations]
+        }
+        return jsonify(result)
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+
+        
 def save_image_from_camera(image_path):
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
@@ -109,11 +164,9 @@ def register():
         capture_image_data = request.form.get('camera_image_data')
         errors = {}
 
-        # Validation for name
         if not name:
             errors['name'] = "Name is required!"
 
-        # Validation for image or capture
         if not image and not capture_image_data:
             errors['image'] = "You must upload an image or capture one!"
 
@@ -122,7 +175,6 @@ def register():
 
         filename = None
 
-        # If there's an image, save it
         if image:
             filename = f"{uuid.uuid4().hex}.jpg"
             image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
@@ -131,17 +183,14 @@ def register():
             filename = f"{uuid.uuid4().hex}.jpg"
             image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
-            # Decode and save the captured image
             image_data = re.sub('^data:image/jpeg;base64,', '', capture_image_data)
             image_data = base64.b64decode(image_data)
             image = Image.open(BytesIO(image_data))
             image.save(image_path)
 
-        # Save user data to a file
         with open('users.txt', 'a') as f:
             f.write(f"{name},{filename}\n")
         
-        # Process face recognition
         image = face_recognition.load_image_file(image_path)
         encodings = face_recognition.face_encodings(image)
         if encodings:
@@ -149,11 +198,12 @@ def register():
             known_face_encodings.append(encoding)
             known_face_names.append(name)
         
-        # Set success message in session
         session['success_message'] = 'Registration successful! Redirecting to home...'
         return redirect(url_for('home'))
 
     return render_template('register.html')
+
+
 @app.route('/view_users', methods=['GET', 'POST'])
 def view_users():
     if os.path.exists('users.txt'):

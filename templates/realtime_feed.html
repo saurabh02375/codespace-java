@@ -1,7 +1,161 @@
 {% extends 'base.html' %} {% block title %}Register{% endblock %} {% block
     content %}  
-    <h1>Welcome to the Real-Time Face Recognition App</h1>
-    <a href="{{ url_for('realtime_feed') }}">Go to Real-Time Feed</a>
+    <h1>Real-Time Camera Feed</h1>
+    <video id="video" autoplay></video>
+    <canvas id="canvas"></canvas>
+    <div id="status" class="detected"></div>
+    <script>
+ 
+ document.addEventListener("DOMContentLoaded", function () {
+    const captureCheckbox = document.getElementById("capture");
+    const fileInput = document.getElementById("file-input");
+    const uploadArea = document.getElementById("upload-area");
+    const previewImage = document.getElementById("preview");
+    const videoPreview = document.createElement("video");
+    const cameraImageData = document.getElementById("camera-image-data");
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+
+    videoPreview.setAttribute("id", "video-preview");
+    videoPreview.setAttribute("width", "100%");
+    videoPreview.setAttribute("height", "auto");
+    videoPreview.setAttribute("autoplay", true);
+    videoPreview.style.display = "none";
+
+    uploadArea.parentNode.insertBefore(videoPreview, uploadArea.nextSibling);
+
+    function startVideoStream() {
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then((stream) => {
+                console.log('Camera stream started');
+                videoPreview.srcObject = stream;
+                videoPreview.style.display = "block";
+                uploadArea.style.display = "none";
+                previewImage.style.display = "none";
+            })
+            .catch((error) => {
+                console.error("Error accessing the camera:", error);
+            });
+    }
+
+    function stopVideoStream() {
+        const stream = videoPreview.srcObject;
+        if (stream) {
+            const tracks = stream.getTracks();
+            tracks.forEach((track) => track.stop());
+        }
+        videoPreview.style.display = "none";
+        uploadArea.style.display = "block";
+        fileInput.value = "";
+    }
+
+    captureCheckbox.addEventListener("change", function () {
+        if (this.checked) {
+            startVideoStream();
+        } else {
+            stopVideoStream();
+        }
+    });
+
+    fileInput.addEventListener("change", function () {
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                previewImage.src = e.target.result;
+                previewImage.style.display = "block";
+                videoPreview.style.display = "none";
+                cameraImageData.value = ""; // Clear camera data if file is selected
+            };
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+
+    uploadArea.addEventListener("dragover", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        uploadArea.classList.add("drag-over");
+    });
+
+    uploadArea.addEventListener("dragleave", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        uploadArea.classList.remove("drag-over");
+    });
+
+    uploadArea.addEventListener("drop", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        uploadArea.classList.remove("drag-over");
+
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            fileInput.files = files; // Update file input with dropped files
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                previewImage.src = e.target.result;
+                previewImage.style.display = "block";
+                videoPreview.style.display = "none";
+                cameraImageData.value = ""; // Clear camera data if file is dropped
+            };
+            reader.readAsDataURL(files[0]);
+        }
+    });
+
+    uploadArea.addEventListener("click", function () {
+        fileInput.click();
+    });
+
+    function captureImage() {
+        if (videoPreview.videoWidth > 0 && videoPreview.videoHeight > 0) {
+            canvas.width = videoPreview.videoWidth;
+            canvas.height = videoPreview.videoHeight;
+            context.drawImage(videoPreview, 0, 0, canvas.width, canvas.height);
+            return canvas.toDataURL("image/jpeg");
+        } else {
+            console.error("Video dimensions are zero. Ensure the video stream is properly loaded.");
+            return null;
+        }
+    }
+
+    document.querySelector("form").addEventListener("submit", function (e) {
+        if (captureCheckbox.checked) {
+            e.preventDefault(); // Prevent default form submission
+
+            const cameraData = captureImage();
+            console.log("Captured image data:", cameraData); // Log captured data
+
+            if (cameraData) {
+                const formData = new FormData(this);
+                formData.set('camera_image_data', cameraData); // Use set to replace existing value
+
+                fetch(this.action, {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = data.redirect_url || '/'; // Redirect on success
+                    } else {
+                        console.error("Form submission failed:", data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error submitting form:", error);
+                });
+            } else {
+                console.error("No camera data captured.");
+            }
+        } else {
+            // Allow default form submission if camera is not checked
+            this.submit();
+        }
+    });
+});
+
+
+
+    </script>
 {% endblock %}
 
     

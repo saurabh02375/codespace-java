@@ -165,70 +165,70 @@
                 </p>
               </div>
               <form
-    action="{{ url_for('register') }}"
-    method="post"
-    enctype="multipart/form-data"
-  >
-    <div class="row">
-      <div class="col-xl-12">
-        <div class="team-details-input text-light mb-20">
-          <label class="text-dark">Name</label>
-          <input name="name" type="text" placeholder="Your name" />
-          {% if errors and errors.get('name') %}
-          <div class="text-danger">{{ errors['name'] }}</div>
-          {% endif %}
-        </div>
-      </div>
-
-      <div class="col-xl-12">
-        <label class="text-dark">Upload Image:</label>
-        <div id="upload-area" class="file-upload">
-          Drag & Drop or Click to Upload Image
-        </div>
-        <input
-          type="file"
-          id="file-input"
-          name="image"
-          accept="image/*"
-          style="display: none;"
-        />
-        <img
-          id="preview"
-          src=""
-          alt="Image preview"
-          style="display: none;"
-        />
-        {% if errors and errors.get('image') %}
-        <div class="text-danger">{{ errors['image'] }}</div>
-        {% endif %}
-      </div>
-
- 
-
-      <div class="col-xl-12">
-        <label class="text-dark">Or Capture Image:</label>
-        <label class="switch">
-          <input type="checkbox" id="capture" />
-          <span class="slider"></span>
-        </label>
-      </div>
-
-
-      <label class="text-dark" for="capture">Capture from Live Camera</label>
-      <input type="hidden" id="camera-image-data" name="camera_image_data" />
-
-      <div class="col-xl-12">
-        <div class="team-details-btn">
-          <button
-            type="submit"
-            class="tp-btn-blue radius-6 w-100 text-center text-light"
-          >
-            Submit
-          </button>
-        </div>
-      </div>
-    </div>
-  </form>
+              action="{{ url_for('register') }}"
+              method="post"
+              enctype="multipart/form-data"
+            >
+              <div class="row">
+                <div class="col-xl-12">
+                  <div class="team-details-input text-light mb-20">
+                    <label class="text-dark">Name</label>
+                    <input name="name" type="text" placeholder="Your name" />
+                    {% if errors and errors.get('name') %}
+                    <div class="text-danger">{{ errors['name'] }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+            
+                <div class="col-xl-12">
+                  <label class="text-dark">Upload Image:</label>
+                  <div id="upload-area" class="file-upload">
+                    Drag & Drop or Click to Upload Image
+                  </div>
+                  <input
+                    type="file"
+                    id="file-input"
+                    name="image"
+                    accept="image/*"
+                    style="display: none;"
+                  />
+                  <img
+                    id="preview"
+                    src=""
+                    alt="Image preview"
+                    style="display: none;"
+                  />
+                  {% if errors and errors.get('image') %}
+                  <div class="text-danger">{{ errors['image'] }}</div>
+                  {% endif %}
+                </div>
+            
+                <div class="col-xl-12">
+                  <label class="text-dark">Or Capture Image:</label>
+                  <label class="switch">
+                    <input type="checkbox" id="capture" />
+                    <span class="slider"></span>
+                  </label>
+                </div>
+            
+                <label class="text-dark" for="capture">Capture from Live Camera</label>
+                <input type="hidden" id="camera-image-data" name="camera_image_data" />
+            
+                <div class="col-xl-12">
+                  <button type="button" id="capture-button" style="display: none;" class="tp-btn-blue radius-6 w-100 text-center text-light">
+                    Capture Image
+                  </button>
+                  <div class="team-details-btn">
+                    <button
+                      type="submit"
+                      class="tp-btn-blue radius-6 w-100 text-center text-light"
+                    >
+                      Submit
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
             
          
             
@@ -264,152 +264,171 @@
       </div>
       <button type="submit">Register</button>
     </form> -->
-    <script>
-     document.addEventListener("DOMContentLoaded", function () {
-    const captureCheckbox = document.getElementById("capture");
-    const fileInput = document.getElementById("file-input");
-    const uploadArea = document.getElementById("upload-area");
-    const previewImage = document.getElementById("preview");
-    const videoPreview = document.createElement("video");
-    const cameraImageData = document.getElementById("camera-image-data");
-    const canvas = document.createElement("canvas");
-    const context = canvas.getContext("2d");
 
-    videoPreview.setAttribute("id", "video-preview");
-    videoPreview.setAttribute("width", "100%");
-    videoPreview.setAttribute("height", "auto");
-    videoPreview.setAttribute("autoplay", true);
+      
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+  const captureCheckbox = document.getElementById("capture");
+  const captureButton = document.getElementById("capture-button");
+  const fileInput = document.getElementById("file-input");
+  const uploadArea = document.getElementById("upload-area");
+  const previewImage = document.getElementById("preview");
+  const videoPreview = document.createElement("video");
+  const cameraImageData = document.getElementById("camera-image-data");
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+
+  videoPreview.setAttribute("id", "video-preview");
+  videoPreview.setAttribute("width", "100%");
+  videoPreview.setAttribute("height", "auto");
+  videoPreview.setAttribute("autoplay", true);
+  videoPreview.style.display = "none";
+
+  uploadArea.parentNode.insertBefore(videoPreview, uploadArea.nextSibling);
+
+  function startVideoStream() {
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then((stream) => {
+        videoPreview.srcObject = stream;
+        videoPreview.style.display = "block";
+        uploadArea.style.display = "none";
+        previewImage.style.display = "none";
+        captureButton.style.display = "block";
+      })
+      .catch((error) => {
+        console.error("Error accessing the camera:", error);
+      });
+  }
+
+  function stopVideoStream() {
+    const stream = videoPreview.srcObject;
+    if (stream) {
+      const tracks = stream.getTracks();
+      tracks.forEach((track) => track.stop());
+    }
     videoPreview.style.display = "none";
+    uploadArea.style.display = "block";
+    captureButton.style.display = "none";
+    captureCheckbox.checked = false; // Uncheck the checkbox
+    fileInput.value = "";
+  }
 
-    uploadArea.parentNode.insertBefore(videoPreview, uploadArea.nextSibling);
-
-    function startVideoStream() {
-        navigator.mediaDevices
-            .getUserMedia({ video: true })
-            .then((stream) => {
-                videoPreview.srcObject = stream;
-                videoPreview.style.display = "block";
-                uploadArea.style.display = "none";
-                previewImage.style.display = "none";
-            })
-            .catch((error) => {
-                console.error("Error accessing the camera", error);
-            });
+  function captureImage() {
+    if (videoPreview.videoWidth > 0 && videoPreview.videoHeight > 0) {
+      canvas.width = videoPreview.videoWidth;
+      canvas.height = videoPreview.videoHeight;
+      context.drawImage(videoPreview, 0, 0, canvas.width, canvas.height);
+      return canvas.toDataURL("image/jpeg");
+    } else {
+      console.error("Video dimensions are zero. Ensure the video stream is properly loaded.");
+      return null;
     }
+  }
 
-    function stopVideoStream() {
-        const stream = videoPreview.srcObject;
-        if (stream) {
-            const tracks = stream.getTracks();
-            tracks.forEach((track) => track.stop());
-        }
+  captureCheckbox.addEventListener("change", function () {
+    if (this.checked) {
+      startVideoStream();
+    } else {
+      stopVideoStream();
+    }
+  });
+
+  captureButton.addEventListener("click", function () {
+    const cameraData = captureImage();
+    if (cameraData) {
+      previewImage.src = cameraData;
+      previewImage.style.display = "block";
+      cameraImageData.value = cameraData; // Update hidden field with captured data
+      captureCheckbox.checked = false; // Uncheck the checkbox
+      stopVideoStream(); // Stop the video stream
+    } else {
+      console.error("No camera data captured.");
+    }
+  });
+
+  fileInput.addEventListener("change", function () {
+    if (this.files && this.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        previewImage.src = e.target.result;
+        previewImage.style.display = "block";
         videoPreview.style.display = "none";
-        uploadArea.style.display = "block";
-        fileInput.value = "";
+        cameraImageData.value = ""; // Clear camera data if file is selected
+        captureCheckbox.checked = false; // Uncheck the checkbox
+      };
+      reader.readAsDataURL(this.files[0]);
     }
+  });
 
-    captureCheckbox.addEventListener("change", function () {
-        if (this.checked) {
-            startVideoStream();
-        } else {
-            stopVideoStream();
-        }
-    });
+  uploadArea.addEventListener("dragover", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    uploadArea.classList.add("drag-over");
+  });
 
-    fileInput.addEventListener("change", function () {
-        if (this.files && this.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                previewImage.src = e.target.result;
-                previewImage.style.display = "block";
-                videoPreview.style.display = "none";
-                cameraImageData.value = ""; // Clear camera data if file is selected
-            };
-            reader.readAsDataURL(this.files[0]);
-        }
-    });
+  uploadArea.addEventListener("dragleave", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    uploadArea.classList.remove("drag-over");
+  });
 
-    uploadArea.addEventListener("dragover", function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        uploadArea.classList.add("drag-over");
-    });
+  uploadArea.addEventListener("drop", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    uploadArea.classList.remove("drag-over");
 
-    uploadArea.addEventListener("dragleave", function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        uploadArea.classList.remove("drag-over");
-    });
-
-    uploadArea.addEventListener("drop", function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        uploadArea.classList.remove("drag-over");
-
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            fileInput.files = files; // Update file input with dropped files
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                previewImage.src = e.target.result;
-                previewImage.style.display = "block";
-                videoPreview.style.display = "none";
-                cameraImageData.value = ""; // Clear camera data if file is dropped
-            };
-            reader.readAsDataURL(files[0]);
-        }
-    });
-
-    uploadArea.addEventListener("click", function () {
-        fileInput.click();
-    });
-
-    function captureImage() {
-        if (videoPreview.videoWidth > 0 && videoPreview.videoHeight > 0) {
-            canvas.width = videoPreview.videoWidth;
-            canvas.height = videoPreview.videoHeight;
-            context.drawImage(videoPreview, 0, 0, canvas.width, canvas.height);
-            return canvas.toDataURL("image/jpeg");
-        } else {
-            console.error("Video dimensions are zero. Ensure the video stream is properly loaded.");
-            return null;
-        }
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      fileInput.files = files; // Update file input with dropped files
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        previewImage.src = e.target.result;
+        previewImage.style.display = "block";
+        videoPreview.style.display = "none";
+        cameraImageData.value = ""; // Clear camera data if file is dropped
+        captureCheckbox.checked = false; // Uncheck the checkbox
+      };
+      reader.readAsDataURL(files[0]);
     }
+  });
 
-    document.querySelector("form").addEventListener("submit", function (e) {
-        if (captureCheckbox.checked) {
-            e.preventDefault();
+  uploadArea.addEventListener("click", function () {
+    fileInput.click();
+  });
 
-            const cameraData = captureImage();
-            if (cameraData) {
-                const formData = new FormData(this);
-                formData.append('camera_image_data', cameraData);
+  document.querySelector("form").addEventListener("submit", function (e) {
+    if (captureCheckbox.checked) {
+      e.preventDefault(); // Prevent default form submission
 
-                fetch(this.action, {
-                    method: 'POST',
-                    body: formData,
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        window.location.href = data.redirect_url; // Redirect to home or any other page
-                    } else {
-                        console.error("Form submission failed");
-                    }
-                })
-                .catch(error => {
-                    console.error("Error submitting form", error);
-                });
-            }
-        }
-    }); 
+      const cameraData = captureImage();
+      if (cameraData) {
+        const formData = new FormData(this);
+        formData.append('camera_image_data', cameraData);
+
+        fetch(this.action, {
+          method: 'POST',
+          body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            window.location.href = data.redirect_url || '/'; // Redirect on success
+          } else {
+            console.error("Form submission failed:", data.error);
+          }
+        })
+        .catch(error => {
+          console.error("Error submitting form:", error);
+        });
+      } else {
+        console.error("No camera data captured.");
+      }
+    }
+  });
 });
 
-   
-   
-   </script>
-    
-    
+</script>>
+      
     
   
   {% endblock %}
