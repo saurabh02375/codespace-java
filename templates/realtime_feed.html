@@ -1,0 +1,18 @@
+{% extends 'base.html' %} {% block title %}Register{% endblock %} {% block
+    content %}  
+<h1>Welcome to the Face Recognition System</h1>
+    
+<!-- Link to access the real-time feed -->
+<div class="tp-header-btn d-none d-sm-block">
+    <a class="tp-btn ml-30" href="{{ url_for('video_feed') }}">Realtime Feed</a>
+</div>
+<script>
+    function refreshFeed() {
+        const feed = document.getElementById('video-feed');
+        feed.src = "{{ url_for('video_feed') }}" + "?time=" + new Date().getTime();
+    }
+    setInterval(refreshFeed, 1000); // Refresh every second
+</script>
+{% endblock %}
+
+    

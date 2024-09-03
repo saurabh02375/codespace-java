@@ -1,8 +1,48 @@
+/* General Styles */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+/* Header */
+.tp-header-area {
+  background: #000;
+  color: #fff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .container-1680 {
+    max-width: 100%;
+  }
+}
+
+/* Header Menu */
+.tp-header-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tp-header-menu ul li {
+  display: inline;
+  margin-right: 20px;
+}
+
+.tp-header-menu ul li a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.tp-header-menu ul li a:hover {
+  text-decoration: underline;
+}
+
+/* Form Styles */
 .forms {
   max-width: 500px;
   margin: 50px auto;
   padding: 20px;
-  /* From https://css.glass */
   background: rgba(255, 255, 255, 0.18);
   border-radius: 16px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
@@ -10,12 +50,15 @@
   -webkit-backdrop-filter: blur(5px);
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
+
+/* Form label */
 form label {
   display: block;
   margin-bottom: 8px;
   font-weight: bold;
   color: #333;
 }
+
 /* Style for input fields */
 form input[type="file"],
 form input[type="radio"] {
@@ -26,6 +69,7 @@ form input[type="radio"] {
   font-size: 16px;
   box-sizing: border-box;
 }
+
 /* Style for the file upload area */
 #upload-area {
   display: flex;
@@ -41,6 +85,7 @@ form input[type="radio"] {
   margin-bottom: 20px;
   transition: background-color 0.3s;
 }
+
 #upload-area:hover {
   background-color: #e9ecef;
 }
@@ -57,7 +102,7 @@ form input[type="radio"] {
 form button[type="submit"] {
   width: 100%;
   padding: 12px;
-  background-color: #007bff;
+  background-color: #101316;
   color: white;
   border: none;
   border-radius: 4px;
@@ -67,32 +112,152 @@ form button[type="submit"] {
 }
 
 form button[type="submit"]:hover {
-  background-color: #0056b3;
-}
-.contactformclass {
-  /* From https://css.glass */
-  background: rgb(219 215 215 / 20%);
-  border-radius: 16px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-.pt-130 {
-  padding-top: 177px;
-}
-.tp-faq-form-box {
-  padding: 80px;
-  margin-left: 75px;
-  border-radius: 20px;
-  background-color: #384247;
-}
-/* Hide the default checkbox */
-input[type="checkbox"] {
-  display: none;
+  background-color: #0a6e9f;
 }
 
-/* The switch container */
+/* Contact form container */
+.contactformclass {
+  background: rgba(219, 215, 215, 0.20);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(219, 215, 215, 0.30);
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Custom Buttons */
+.tp-btn {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+.tp-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Offcanvas Menu */
+.tp-offcanvas-area {
+  background: #fff;
+}
+
+.tp-offcanvas-content {
+  padding: 20px;
+}
+
+.tp-offcanvas-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tp-offcanvas-menu ul li {
+  margin-bottom: 10px;
+}
+
+.tp-offcanvas-menu ul li a {
+  color: #000;
+  text-decoration: none;
+}
+
+.tp-offcanvas-menu ul li a:hover {
+  text-decoration: underline;
+}
+
+.tp-offcanvas-contact ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tp-offcanvas-contact ul li {
+  margin-bottom: 10px;
+}
+
+.tp-offcanvas-social ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tp-offcanvas-social ul li {
+  display: inline;
+  margin-right: 10px;
+}
+
+.tp-offcanvas-social ul li a {
+  color: #000;
+  text-decoration: none;
+}
+
+.tp-offcanvas-social ul li a:hover {
+  color: #007bff;
+}
+
+/* Result message */
+#result-message {
+  display: none;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 20px;
+}
+
+.success {
+  color: green;
+  background-color: #e6ffe6;
+  border: 1px solid green;
+}
+
+.error {
+  color: red;
+  background-color: #ffe6e6;
+  border: 1px solid red;
+}
+
+/* Video feed styling */
+.video-feed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+video {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border: 2px solid #007bff;
+  border-radius: 8px;
+}
+
+/* Responsive adjustments for attendance form */
+@media (max-width: 768px) {
+  .tp-faq-form-box {
+    padding: 15px;
+  }
+
+  .tp-faq-form-content {
+    padding: 15px;
+  }
+
+  #upload-area {
+    height: 120px;
+    font-size: 14px;
+  }
+
+  #video {
+    max-width: 100%;
+  }
+}
+
+
+
+/* Custom Checkbox Slider Styles */
 .switch {
   position: relative;
   display: inline-block;
@@ -100,7 +265,12 @@ input[type="checkbox"] {
   height: 34px;
 }
 
-/* The slider */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
 .slider {
   position: absolute;
   cursor: pointer;
@@ -108,92 +278,35 @@ input[type="checkbox"] {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #ccc;
-  transition: 0.4s;
+  background-color: #ccc; /* Grey background when not checked */
+  transition: .4s;
   border-radius: 34px;
 }
 
-/* The slider before */
 .slider:before {
   position: absolute;
   content: "";
   height: 26px;
   width: 26px;
+  border-radius: 50%;
   left: 4px;
   bottom: 4px;
   background-color: white;
-  transition: 0.4s;
-  border-radius: 50%;
+  transition: .4s;
 }
 
-/* Checked state */
 input:checked + .slider {
-  background-color: #4caf50;
+  background-color: #0a5b84; /* Blue background when checked */
 }
 
-/* Move the slider to the right when checked */
 input:checked + .slider:before {
-  transform: translateX(26px);
+  transform: translateX(26px); /* Move knob to the right when checked */
 }
 
-/* Optional: Focus state (for accessibility) */
-input[type="checkbox"]:focus + .slider {
-  box-shadow: 0 0 1px #4caf50;
-}
-
-/* Base button styling */
-.tp-btn-blue {
-  background-color: #007bff; /* Blue background */
-  border: none; /* No border */
-  color: #ffffff; /* White text color */
-  padding: 12px 20px; /* Padding for size */
-  font-size: 16px; /* Font size */
-  font-weight: 600; /* Font weight for emphasis */
-  cursor: pointer; /* Pointer cursor on hover */
-  display: flex; /* Flexbox for icon alignment */
-  justify-content: center; /* Center the content */
-  align-items: center; /* Center the content vertically */
-  transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover */
-}
-
-/* Button radius */
-.radius-6 {
-  border-radius: 6px;
-}
-
-/* Button width */
-.w-100 {
-  width: 100%;
-}
-
-/* Icon inside the button */
-.button-icon {
-  margin-left: 8px; /* Space between text and icon */
-  display: inline-flex; /* Align icon inline */
-}
-
-/* Hover effect */
-.tp-btn-blue:hover {
-  background-color: #0056b3; /* Darker blue on hover */
-  box-shadow: 0px 4px 15px rgba(0, 91, 187, 0.3); /* Subtle shadow */
-}
-
-/* Focus effect */
-.tp-btn-blue:focus {
-  outline: none; /* Remove default focus outline */
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5); /* Custom focus outline */
-}
-
-/* Disable button styling */
-.tp-btn-blue:disabled {
-  background-color: #cccccc; /* Gray background */
-  cursor: not-allowed; /* Not-allowed cursor */
-  box-shadow: none; /* No shadow */
-}
-
-/* Additional styling for the error message */
-.ajax-response {
-  margin-top: 10px; /* Space above the message */
-  font-size: 14px; /* Smaller font size */
-  color: #dc3545; /* Bootstrap's danger color */
+/* Slider Label */
+.switch-label {
+  display: inline-block;
+  margin-left: 10px;
+  font-size: 16px;
+  color: #333;
 }
