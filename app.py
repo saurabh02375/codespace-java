@@ -82,6 +82,11 @@ def home():
 def video_feed():
     return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+@app.route('/realtime_feed')
+def realtime_feed():
+    return render_template('realtime_feed.html')
+
+    
 def save_image_from_camera(image_path):
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
